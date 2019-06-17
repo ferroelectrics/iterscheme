@@ -1,0 +1,5 @@
+*.pyc
+*.pyo
+.pytest_cache
+__pycache__
+iterscheme.egg-info
