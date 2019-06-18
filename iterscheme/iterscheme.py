@@ -58,3 +58,9 @@ def NoConstants():  # pylint: disable=invalid-name
         as first component in scheme.
     """
     return IterationScheme()
+
+
+def Constants(*values):  # pylint: disable=invalid-name
+    """Wrapper for first component in IterationScheme.
+    """
+    return IterationScheme(*values)
