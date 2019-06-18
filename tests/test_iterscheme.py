@@ -2,7 +2,7 @@
 
 
 import pytest
-from iterscheme import IterationScheme, NoConstants
+from iterscheme import IterationScheme, NoConstants, Constants
 
 
 IS = IterationScheme
@@ -59,3 +59,11 @@ def test_basics():
     assert(is4_content[0] == ([1, 2, 3], 4))
     assert(is4_content[1] == ([1, 2, 3], 5))
     assert(is4_content[2] == ([1, 2, 3], 6))
+
+    is5 = Constants(const1, const2) >> IS(var1)
+    is5_content = list(is5)
+
+    assert(len(is5_content) == 3)
+    assert(is5_content[0] == (0.5, 's', 4))
+    assert(is5_content[1] == (0.5, 's', 5))
+    assert(is5_content[2] == (0.5, 's', 6))
