@@ -10,42 +10,67 @@
 from itertools import product
 
 
+class IterationSchemeElement():
+    """:class:`iterscheme.IterationSchemeElement` describes 
+    variables on one of the levels in the nested for loop 
+    structure. For example::
+
+                                        # ISC = IterationSchemeElement
+    for i in [...]:                     # i = ISC([...])
+        for j,k  in zip([...], ...[]):  # jk = ISC([...], [...])
+            for l in [...]:             # l = ISC([...])
+    """
+    def __init__(self, *variables):
+        if variables:
+            self._variables = [variables]
+        else:
+            # We simulate lack of outermost level variables this way
+            self._variables = [[]]
+
+    def __rshift__(self, other_element):
+        """:meth:`__rshift__` allows chaining of multiple
+        elements, what simulates nesting more loops::
+
+        ISC = IterationSchemeElement
+        ISC(x) >> ISC(y) >> ISC(z)
+        """
+        self._variables.extend(other_element._variables)  # pylint: disable=protected-access 
+        return self
+
+    @property
+    def nested_variables(self):
+        """Simple property to retrieve variables structure from
+        :class:`iterscheme.IterationSchemeElement` object. 
+        
+        TODO:: Think about copying issues
+        """
+        return self._variables
+
+
 class IterationScheme():
     """:class:`iterscheme.IterationScheme` object represents
-    one of the levels of nested for loop structure. Combining
-    multiple instances results in whole iteration scheme from
-    which all iteration parameters can be accessed linearly.
+    nested for loop structure, which support linear iteration
+    over values. 
 
-    When instance of this class is asked for :meth:`__iter__`
-    no more adding of new components is allowed.
+    Constructor supports :class:`iterscheme.IterationSchemeElement`
+    as :arg:`nested_variables`, but one can build this structure
+    manually.
     """
-    def __init__(self, *values):
-        if values:
-            self._values = [values]
+    def __init__(self, nested_variables):
+        if isinstance(nested_variables, IterationSchemeElement):
+            self._nested_variables = nested_variables.nested_variables
         else:
-            self._values = [[]]
+            self._nested_variables = nested_variables 
         self._iterator = None
-
-    def __rshift__(self, other):
-        """Method for combining parts of iteration scheme::
-
-            IS = IterationScheme
-            IS([1,2,3]) >> IS(['a','b','c'], [obj1,obj2,obj3])
-        """
-        if self._iterator is not None:
-            raise Exception('Iteration scheme is ready!'
-                            'Can\'t add more parameters.')
-        self._values.extend(other._values)  # pylint: disable=protected-access
-        return self
 
     def __iter__(self):
         """TODO: Explain packing of scalar arguments and other things
         """
-        if self._values[0]:
-            self._values[0] = tuple([v] for v in self._values[0])
+        if self._nested_variables[0]:
+            self._nested_variables[0] = tuple([v] for v in self._nested_variables[0])
         else:
-            self._values = self._values[1:]
-        product_components = (zip(*v) for v in self._values)
+            self._nested_variables = self._nested_variables[1:]
+        product_components = (zip(*v) for v in self._nested_variables)
         self._iterator = product(*product_components)
         return self
 
@@ -57,10 +82,10 @@ def NoConstants():  # pylint: disable=invalid-name
     """When no constants needed use this function
         as first component in scheme.
     """
-    return IterationScheme()
+    return IterationSchemeElement()
 
 
 def Constants(*values):  # pylint: disable=invalid-name
     """Wrapper for first component in IterationScheme.
     """
-    return IterationScheme(*values)
+    return IterationSchemeElement(*values)
