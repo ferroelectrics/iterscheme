@@ -11,8 +11,8 @@ from itertools import product
 
 
 class IterationSchemeElement():
-    """:class:`iterscheme.IterationSchemeElement` describes 
-    variables on one of the levels in the nested for loop 
+    """:class:`iterscheme.IterationSchemeElement` describes
+    variables on one of the levels in the nested for loop
     structure. For example::
 
                                         # ISC = IterationSchemeElement
@@ -34,14 +34,14 @@ class IterationSchemeElement():
         ISC = IterationSchemeElement
         ISC(x) >> ISC(y) >> ISC(z)
         """
-        self._variables.extend(other_element._variables)  # pylint: disable=protected-access 
+        self._variables.extend(other_element._variables)  # pylint: disable=protected-access
         return self
 
     @property
     def nested_variables(self):
         """Simple property to retrieve variables structure from
-        :class:`iterscheme.IterationSchemeElement` object. 
-        
+        :class:`iterscheme.IterationSchemeElement` object.
+
         TODO:: Think about copying issues
         """
         return self._variables
@@ -50,7 +50,7 @@ class IterationSchemeElement():
 class IterationScheme():
     """:class:`iterscheme.IterationScheme` object represents
     nested for loop structure, which support linear iteration
-    over values. 
+    over values.
 
     Constructor supports :class:`iterscheme.IterationSchemeElement`
     as :arg:`nested_variables`, but one can build this structure
@@ -60,14 +60,15 @@ class IterationScheme():
         if isinstance(nested_variables, IterationSchemeElement):
             self._nested_variables = nested_variables.nested_variables
         else:
-            self._nested_variables = nested_variables 
+            self._nested_variables = nested_variables
         self._iterator = None
 
     def __iter__(self):
         """TODO: Explain packing of scalar arguments and other things
         """
         if self._nested_variables[0]:
-            self._nested_variables[0] = tuple([v] for v in self._nested_variables[0])
+            self._nested_variables[0] = \
+                    tuple([v] for v in self._nested_variables[0])
         else:
             self._nested_variables = self._nested_variables[1:]
         product_components = (zip(*v) for v in self._nested_variables)
