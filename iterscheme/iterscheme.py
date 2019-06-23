@@ -75,6 +75,12 @@ class IterationScheme():
         return self
 
     def __next__(self):
+        """Iteration scheme returs plain tuple of values
+        without annotation of any kind. User can only rely
+        on order of values in this tuple. If elements look
+        like `ISE(x) >> ISE(y,z) >> ISE(w)` then every tuple
+        is (element_of_x, element_of_y, element_of_z, element_of_w)
+        """
         return tuple(i for v in next(self._iterator) for i in v)
 
 
