@@ -63,6 +63,11 @@ class IterationScheme():
             self._nested_variables = nested_variables
         self._iterator = None
 
+    def properties(self, property_getter):
+        return [property_getter(var) 
+                for nested_var in self._nested_variables 
+                for var in nested_var]
+
     def __iter__(self):
         """TODO: Explain packing of scalar arguments and other things
         """
@@ -84,6 +89,20 @@ class IterationScheme():
         """
         return tuple(i for v in next(self._iterator) for i in v)
 
+
+def adapter(property_getter):
+    """
+    """
+    def getter_assigned(adapter_func):
+        def adapted(ischeme):
+            properties = ischeme.properties(property_getter)
+            for bunch_of_values in ischeme:
+                yield adapter_func(bunch_of_values, properties)
+
+        return adapted
+
+    return getter_assigned
+    
 
 def NoConstants():  # pylint: disable=invalid-name
     """When no constants needed use this function
