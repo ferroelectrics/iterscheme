@@ -106,7 +106,7 @@ def test_namedtuple_adapter():
     ischeme = Constants(c1) >> ISE(x) >> ISE(y)
     ischeme_content = list(namedtuple_adapter(IS(ischeme.nested_variables)))
 
-    for entry, xval, yval in zip(ischeme_content, [1,1,1,2,2,2,3,3,3,], ['a','b','c']):
+    for entry, xval, yval in zip(ischeme_content, [1,1,1,2,2,2,3,3,3], ['a','b','c']*3):
         assert(entry.c1 == 0.5)
         assert(entry.x == xval)
         assert(entry.y == yval)
