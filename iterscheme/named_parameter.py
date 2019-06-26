@@ -8,6 +8,7 @@
 
 
 from collections import namedtuple
+import numpy
 from .iterscheme import adapter
 
 
@@ -27,6 +28,10 @@ def named_parameter(name, values):
             """Property for identification of collection by name.
             """
             return name
+
+    if isinstance(values, numpy.ndarray):
+        return Wrapper(shape=values.shape,
+                       buffer=values.data, dtype=values.dtype)
 
     return Wrapper(values)
 

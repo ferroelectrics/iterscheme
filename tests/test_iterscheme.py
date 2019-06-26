@@ -5,6 +5,7 @@ import pytest
 from iterscheme import IterationSchemeElement, IterationScheme, \
                        NoConstants, Constants, named_parameter, \
                        dict_adapter, namedtuple_adapter
+import numpy
 
 IS = IterationScheme
 ISE = IterationSchemeElement
@@ -107,6 +108,7 @@ def test_dict_adapter():
     assert(ischeme_content[7] == dict(c1=0.5, x=3, y='b'))
     assert(ischeme_content[8] == dict(c1=0.5, x=3, y='c'))
 
+
 def test_namedtuple_adapter():
     c1 = named_parameter('c1', 0.5)
     x = named_parameter('x', [1,2,3])
@@ -120,4 +122,38 @@ def test_namedtuple_adapter():
         assert(entry.c1 == 0.5)
         assert(entry.x == xval)
         assert(entry.y == yval)
-        
+
+
+def test_numpy():
+    ischeme = Constants(0.5) >> ISE(numpy.array([1,2,3]))
+    ischeme_content = list(IS(ischeme))
+
+    assert(len(ischeme_content) == 3)
+    assert(ischeme_content[0] == (0.5, 1, ))
+    assert(ischeme_content[1] == (0.5, 2, ))
+    assert(ischeme_content[2] == (0.5, 3, ))
+
+
+def test_named_numpy():
+    c1 = named_parameter('c1', 0.5)
+    x = named_parameter('x', numpy.array([1,2,3]))
+    ischeme = Constants(c1) >> ISE(x)
+    ischeme_content = list(namedtuple_adapter(IS(ischeme)))
+
+    assert(len(ischeme_content) == 3)
+    for entry, xval in zip(ischeme_content, [1,2,3]):
+        assert(entry.c1 == 0.5)
+        assert(entry.x == xval)
+
+
+def test_named_numpy_2():
+    c1 = named_parameter('c1', 0.5)
+    x = named_parameter('x', numpy.array([1.0,2.0,3.0]))
+    ischeme = Constants(c1) >> ISE(x)
+    ischeme_content = list(namedtuple_adapter(IS(ischeme)))
+
+    assert(len(ischeme_content) == 3)
+    for entry, xval in zip(ischeme_content, [1.0,2.0,3.0]):
+        assert(entry.c1 == 0.5)
+        assert(entry.x == xval)
+
