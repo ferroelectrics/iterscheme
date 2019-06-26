@@ -64,8 +64,11 @@ class IterationScheme():
         self._iterator = None
 
     def properties(self, property_getter):
-        return [property_getter(var) 
-                for nested_var in self._nested_variables 
+        """With :func:`property_getter` supplied creates list
+        of variable's properties for adapter function.
+        """
+        return [property_getter(var)
+                for nested_var in self._nested_variables
                 for var in nested_var]
 
     def __iter__(self):
@@ -91,7 +94,11 @@ class IterationScheme():
 
 
 def adapter(property_getter):
-    """
+    """:func:`iterscheme.adapter` transforms pure tuple output
+    from :class:`iterscheme.IterationScheme` object to representation
+    described by :arg:`adapter_func` of :func:`getter_assigned`.
+    :arg:`property_getter` describes how property assigned to single
+    variable from `IterationScheme` object can be extracted.
     """
     def getter_assigned(adapter_func):
         def adapted(ischeme):
@@ -102,11 +109,11 @@ def adapter(property_getter):
         return adapted
 
     return getter_assigned
-    
+
 
 def NoConstants():  # pylint: disable=invalid-name
     """When no constants needed use this function
-        as first component in scheme.
+    as first component in scheme.
     """
     return IterationSchemeElement()
 
