@@ -167,17 +167,3 @@ def test_named_numpy_2():
         assert(entry.c1 == 0.5)
         assert(entry.x == xval)
 
-
-# def test_splitter():
-#     ischeme = Constants(0.5) >> ISE([1,2,3,4]).split(2)
-#     ischeme_content = list(IS(ischeme.nested_variables))
-#     first_part = list(ischeme_content[0])
-#     second_part = list(ischeme_content[1])
-# 
-#     assert(len(first_part) == 2)
-#     assert(first_part[0] == (0.5, 1, ))
-#     assert(first_part[1] == (0.5, 2, ))
-#     assert(len(second_part) == 2)
-#     assert(second_part[0] == (0.5, 3, ))
-#     assert(second_part[1] == (0.5, 4, ))
-
