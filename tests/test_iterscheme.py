@@ -69,6 +69,16 @@ def test_two_level_loop():
     assert(ischeme_content[8] == (0.5, 3, 6, ))
 
 
+def test_vector_var():
+    ischeme = Constants(0.5) >> ISE([[1,2,3], [4,5,6], [7,8,9]])
+    ischeme_content = list(IS(ischeme.nested_variables))
+
+    assert(len(ischeme_content) == 3)
+    assert(ischeme_content[0] == (0.5, [1,2,3], ))
+    assert(ischeme_content[1] == (0.5, [4,5,6], ))
+    assert(ischeme_content[2] == (0.5, [7,8,9], ))
+
+
 def test_combined_loop():
     ischeme = Constants(0.5) >> ISE([1,2,3], [4,5,6])
     ischeme_content = list(IS(ischeme.nested_variables))
@@ -156,4 +166,18 @@ def test_named_numpy_2():
     for entry, xval in zip(ischeme_content, [1.0,2.0,3.0]):
         assert(entry.c1 == 0.5)
         assert(entry.x == xval)
+
+
+# def test_splitter():
+#     ischeme = Constants(0.5) >> ISE([1,2,3,4]).split(2)
+#     ischeme_content = list(IS(ischeme.nested_variables))
+#     first_part = list(ischeme_content[0])
+#     second_part = list(ischeme_content[1])
+# 
+#     assert(len(first_part) == 2)
+#     assert(first_part[0] == (0.5, 1, ))
+#     assert(first_part[1] == (0.5, 2, ))
+#     assert(len(second_part) == 2)
+#     assert(second_part[0] == (0.5, 3, ))
+#     assert(second_part[1] == (0.5, 4, ))
 
