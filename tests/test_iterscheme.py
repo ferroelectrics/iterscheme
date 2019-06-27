@@ -69,16 +69,6 @@ def test_two_level_loop():
     assert(ischeme_content[8] == (0.5, 3, 6, ))
 
 
-def test_vector_var():
-    ischeme = Constants(0.5) >> ISE([[1,2,3], [4,5,6], [7,8,9]])
-    ischeme_content = list(IS(ischeme.nested_variables))
-
-    assert(len(ischeme_content) == 3)
-    assert(ischeme_content[0] == (0.5, [1,2,3], ))
-    assert(ischeme_content[1] == (0.5, [4,5,6], ))
-    assert(ischeme_content[2] == (0.5, [7,8,9], ))
-
-
 def test_combined_loop():
     ischeme = Constants(0.5) >> ISE([1,2,3], [4,5,6])
     ischeme_content = list(IS(ischeme.nested_variables))
