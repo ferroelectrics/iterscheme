@@ -8,6 +8,7 @@
 
 
 from itertools import product
+from collections import namedtuple
 
 
 class IterationSchemeElement():
@@ -20,12 +21,15 @@ class IterationSchemeElement():
         for j,k  in zip([...], ...[]):  # jk = ISC([...], [...])
             for l in [...]:             # l = ISC([...])
     """
+    
+    _split = namedtuple('split', 'variables slices')
+
     def __init__(self, *variables):
         if variables:
-            self._variables = [variables]
+            self._variables = [self._split(variables, None)]
         else:
             # We simulate lack of outermost level variables this way
-            self._variables = [[]]
+            self._variables = [self._split([], None)]
 
     def __rshift__(self, other_element):
         """:meth:`__rshift__` allows chaining of multiple
@@ -34,8 +38,49 @@ class IterationSchemeElement():
         ISC = IterationSchemeElement
         ISC(x) >> ISC(y) >> ISC(z)
         """
+
+        #sliced = []
+        #if self._variables.slices:
+        #    for sl in self._variables.slices:
+        #        sliced.append(tuple(var[sl] for var in self._variables.variables))
+        #    self._components.append(sliced)
+        #else:
+        #    self._components.append(other_element._variables)  # pylint: disable=protected-access
+
         self._variables.extend(other_element._variables)  # pylint: disable=protected-access
         return self
+
+    def _split_at(self, n):
+        div = len(self._variables[0].variables[0]) // n
+        return [slice(div*i, div*(i+1)) for i in range(n)]
+
+    def split(self, n):
+        """:meth:`split` splits current element container 
+        into n chunks of equal size.
+        """
+        equal_len = all(len(v)==len(self._variables[0].variables[0]) 
+                    for v in self._variables[0].variables[1:])
+        if not equal_len:
+            raise Exception("")
+        self._variables[0] = self._split(self._variables[0].variables, self._split_at(n))
+
+        return self
+
+    def _unpack_slices(self, variables):
+        if variables.slices is None:
+            return variables.variables
+
+        sliced = []
+        for sl in variables.slices:
+            sliced.append(tuple(var[sl] for var in variables.variables))
+
+        return sliced
+
+    def _left_tuple(self, l):
+        if len(l) == 1:
+            return l[0]
+
+        return l
 
     @property
     def nested_variables(self):
@@ -44,7 +89,31 @@ class IterationSchemeElement():
 
         TODO:: Think about copying issues
         """
-        return self._variables
+
+        slices_exist = any(v.slices for v in self._variables)
+
+        if slices_exist:
+            slices = []
+            vs = [self._unpack_slices(v) for v in self._variables]
+
+            slice_encountered = True
+
+            while slice_encountered:
+                slice_encountered = False
+                sl = []
+                for i, v in enumerate(vs):
+                    if isinstance(v, tuple):
+                        sl.append(v)
+                    elif isinstance(v, list):
+                        sl.append(v[0])
+                        vs[i] = self._left_tuple(vs[i][1:])
+                        slice_encountered = True
+
+                slices.append(sl)
+
+            return slices
+        else:
+            return [v.variables for v in self._variables]
 
 
 class IterationScheme():
@@ -78,7 +147,8 @@ class IterationScheme():
             self._nested_variables[0] = \
                     tuple([v] for v in self._nested_variables[0])
         else:
-            self._nested_variables = self._nested_variables[1:]
+            self._nested_variables = self._nested_variables[1:]    
+
         product_components = (zip(*v) for v in self._nested_variables)
         self._iterator = product(*product_components)
         return self
