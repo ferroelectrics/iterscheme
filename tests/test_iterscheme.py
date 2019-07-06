@@ -186,3 +186,54 @@ def test_splitter():
     assert(parts[1][1] == (0.5, 5, ))
     assert(parts[1][2] == (0.5, 6, ))
 
+
+def test_splitter_multiple():
+    c1 = named_parameter('c', 0.5)
+    x = named_parameter('x', [1,2,3,4,5,6])
+    y = named_parameter('y', 'abcdef')
+    ischeme = Constants(c1) >> ISE(x,y).split(2)
+    ischeme_parts = ischeme.nested_variables
+    ischeme_content = [IS(part) for part in ischeme_parts]
+    parts = [list(p) for p in ischeme_content]
+    
+    assert(len(parts) == 2)
+    assert(len(parts[0]) == 3)
+    assert(len(parts[1]) == 3)
+    assert(parts[0][0] == (0.5, 1, 'a',))
+    assert(parts[0][1] == (0.5, 2, 'b',))
+    assert(parts[0][2] == (0.5, 3, 'c',))
+    assert(parts[1][0] == (0.5, 4, 'd',))
+    assert(parts[1][1] == (0.5, 5, 'e',))
+    assert(parts[1][2] == (0.5, 6, 'f',))
+
+
+def test_splitter_inset():
+    c1 = named_parameter('c', 0.5)
+    x = named_parameter('x', [1,2])
+    y = named_parameter('y', ['a', 'b', 'c', 'd'])
+    z = named_parameter('z', [11,22])
+    ischeme = Constants(c1) >> ISE(x) >> ISE(y).split(2) >> ISE(z)
+    ischeme_parts = ischeme.nested_variables
+    ischeme_content = [IS(part) for part in ischeme_parts]
+    parts = [list(p) for p in ischeme_content]
+    
+    assert(len(parts) == 2)
+    assert(len(parts[0]) == 8)
+    assert(len(parts[1]) == 8)
+    assert(parts[0][0] == (0.5, 1, 'a', 11))
+    assert(parts[0][1] == (0.5, 1, 'a', 22))
+    assert(parts[0][2] == (0.5, 1, 'b', 11))
+    assert(parts[0][3] == (0.5, 1, 'b', 22))
+    assert(parts[0][4] == (0.5, 2, 'a', 11))
+    assert(parts[0][5] == (0.5, 2, 'a', 22))
+    assert(parts[0][6] == (0.5, 2, 'b', 11))
+    assert(parts[0][7] == (0.5, 2, 'b', 22))
+    assert(parts[1][0] == (0.5, 1, 'c', 11))
+    assert(parts[1][1] == (0.5, 1, 'c', 22))
+    assert(parts[1][2] == (0.5, 1, 'd', 11))
+    assert(parts[1][3] == (0.5, 1, 'd', 22))
+    assert(parts[1][4] == (0.5, 2, 'c', 11))
+    assert(parts[1][5] == (0.5, 2, 'c', 22))
+    assert(parts[1][6] == (0.5, 2, 'd', 11))
+    assert(parts[1][7] == (0.5, 2, 'd', 22))
+
