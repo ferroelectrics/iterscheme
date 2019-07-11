@@ -51,8 +51,11 @@ class IterationSchemeElement():
         return self
 
     def _split_at(self, n):
-        div = len(self._variables[0].variables[0]) // n
-        return [slice(div*i, div*(i+1)) for i in range(n)]
+        l = len(self._variables[0].variables[0])
+        div = l // n
+        slices = [slice(div*i, div*(i+1)) for i in range(n-1)]
+        slices.append(slice(slices[-1].stop, l))
+        return slices 
 
     def split(self, n):
         """:meth:`split` splits current element container 
