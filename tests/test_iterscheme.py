@@ -167,6 +167,28 @@ def test_named_numpy_2():
         assert(entry.c1 == 0.5)
         assert(entry.x == xval)
 
+def test_single_bool_named():
+    c1 = named_parameter('c1', False)
+    ischeme = Constants(c1)
+    ischeme_content = list(IS(ischeme))
+
+    assert(len(ischeme_content) == 1)
+    assert(ischeme_content[0] == (False,))
+
+def test_single_string():
+    ischeme = Constants('some_string')
+    ischeme_content = list(IS(ischeme))
+
+    assert(len(ischeme_content) == 1)
+    assert(ischeme_content[0] == ('some_string',))
+
+def test_single_string_named():
+    c1 = named_parameter('c1', 'some_string')
+    ischeme = Constants(c1)
+    ischeme_content = list(IS(ischeme))
+
+    assert(len(ischeme_content) == 1)
+    assert(ischeme_content[0] == ('some_string',))
 
 def test_splitter():
     c1 = named_parameter('c', 0.5)

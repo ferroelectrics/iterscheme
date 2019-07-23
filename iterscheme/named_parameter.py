@@ -17,7 +17,11 @@ def named_parameter(name, values):
     Wrapper allows access to all functionality of values type.
     """
 
-    class Wrapper(type(values)):  # pylint: disable=too-few-public-methods
+    inherit_from = type(values)
+    if isinstance(values, bool):
+        inherit_from = int
+
+    class Wrapper(inherit_from):  # pylint: disable=too-few-public-methods
         """Wrapper for collection of values that assigns
         name attribute to it and gives access to all
         functionality of values type.
