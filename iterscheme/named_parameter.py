@@ -33,6 +33,14 @@ def named_parameter(name, values):
             """
             return name
 
+        def __getitem__(self, key):
+            """Allows propagating of parameter name when slicing.
+            """
+            if isinstance(key, slice):
+                return Wrapper(inherit_from.__getitem__(self, key))
+
+            return inherit_from.__getitem__(self, key)
+
     if isinstance(values, numpy.ndarray):
         return Wrapper(shape=values.shape,
                        buffer=values.data, dtype=values.dtype)
