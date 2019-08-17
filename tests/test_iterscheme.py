@@ -279,3 +279,19 @@ def test_splitter_inset():
     assert(parts[1][6] == (0.5, 2, 'd', 11))
     assert(parts[1][7] == (0.5, 2, 'd', 22))
 
+def test_splitter_noconstants():
+    x = named_parameter('x', [1,2,3,4,5,6])
+    ischeme = NoConstants() >> ISE(x).split(2)
+    ischeme_parts = ischeme.nested_variables
+    ischeme_content = [IS(part) for part in ischeme_parts]
+    parts = [list(p) for p in ischeme_content]
+    
+    assert(len(parts) == 2)
+    assert(len(parts[0]) == 3)
+    assert(len(parts[1]) == 3)
+    assert(parts[0][0] == (1, ))
+    assert(parts[0][1] == (2, ))
+    assert(parts[0][2] == (3, ))
+    assert(parts[1][0] == (4, ))
+    assert(parts[1][1] == (5, ))
+    assert(parts[1][2] == (6, ))

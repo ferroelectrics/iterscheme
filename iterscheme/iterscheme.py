@@ -108,9 +108,12 @@ class IterationSchemeElement():
                     if isinstance(v, tuple):
                         sl.append(v)
                     elif isinstance(v, list):
-                        sl.append(v[0])
-                        vs[i] = self._left_tuple(vs[i][1:])
-                        slice_encountered = True
+                        if len(v) > 0:
+                            sl.append(v[0])
+                            vs[i] = self._left_tuple(vs[i][1:])
+                            slice_encountered = True
+                        else:
+                            sl.append([])
 
                 slices.append(sl)
 
