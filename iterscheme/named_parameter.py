@@ -21,6 +21,20 @@ def named_parameter(name, values):
     if isinstance(values, bool):
         inherit_from = int
 
+    def prepare_cons_args(values):
+        args = list()
+        kwargs = dict()
+        if isinstance(values, (list, dict, set)):
+            args = [values]
+        elif isinstance(values, numpy.ndarray):
+            kwargs = {'shape': values.shape, 
+                      'buffer': values.data, 
+                      'dtype': values.dtype}
+        else:
+            args = [values]
+
+        return args, kwargs
+
     class Wrapper(inherit_from):  # pylint: disable=too-few-public-methods
         """Wrapper for collection of values that assigns
         name attribute to it and gives access to all
@@ -38,20 +52,13 @@ def named_parameter(name, values):
             """
             if isinstance(key, slice):
                 data = inherit_from.__getitem__(self, key)
-
-                if isinstance(data, numpy.ndarray):
-                    return Wrapper(shape=data.shape,
-                                   buffer=data.data, dtype=data.dtype)
-
-                return Wrapper(data)
+                args, kwargs = prepare_cons_args(data)
+                return Wrapper(*args, **kwargs)
 
             return inherit_from.__getitem__(self, key)
 
-    if isinstance(values, numpy.ndarray):
-        return Wrapper(shape=values.shape,
-                       buffer=values.data, dtype=values.dtype)
-
-    return Wrapper(values)
+    args, kwargs = prepare_cons_args(values)
+    return Wrapper(*args, **kwargs)
 
 
 def get_name(entity):

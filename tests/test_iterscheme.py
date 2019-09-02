@@ -295,3 +295,35 @@ def test_splitter_noconstants():
     assert(parts[1][0] == (4, ))
     assert(parts[1][1] == (5, ))
     assert(parts[1][2] == (6, ))
+
+
+def test_slice():
+    x = named_parameter('x', [1,2,3,4,5,6])
+    
+    sl1 = x[:3]
+    sl2 = x[3:]
+
+    assert(len(sl1) == 3)
+    assert(len(sl2) == 3)
+    assert(sl1[0] == 1)
+    assert(sl1[1] == 2)
+    assert(sl1[2] == 3)
+    assert(sl2[0] == 4)
+    assert(sl2[1] == 5)
+    assert(sl2[2] == 6)
+
+
+def test_slice_numpy():
+    x = named_parameter('x', numpy.array([1,2,3,4,5,6]))
+    
+    sl1 = x[:3]
+    sl2 = x[3:]
+
+    assert(len(sl1) == 3)
+    assert(len(sl2) == 3)
+    assert(sl1[0] == 1)
+    assert(sl1[1] == 2)
+    assert(sl1[2] == 3)
+    assert(sl2[0] == 4)
+    assert(sl2[1] == 5)
+    assert(sl2[2] == 6)
